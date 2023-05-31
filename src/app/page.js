@@ -1,7 +1,7 @@
 "use client"
 import Image from 'next/image'
 import useLocalStorage from 'use-local-storage'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Background from '@/components/Background'
 import Ground from '@/components/Ground'
 import styled from 'styled-components'
@@ -32,15 +32,19 @@ left:0;
 bottom:0;
 right:0;
 padding:4rem;
-width:100vw;
-height:100vh;
+width:100%;
+height:100%;
 background-color:rgba(0,0,0,0.8);
 z-index:15;
 ` 
 const StyledForm = styled.form`
 display:flex;
+
 flex-direction:column;
+width:100%;
 align-items:center;
+justify-content: center;
+
 `
 
 const ButtonWrapper = styled.div`
@@ -69,7 +73,14 @@ top:0;
 left:0;
 background-color:rgba(0,0,0,0.9);
 text-align: center;
+
 `  
+
+const StyledX = styled.button`
+background-color:transparent;
+background: transparent;
+border:none;
+`
 
 const MainWrapper = styled.div`
   display: flex;
@@ -91,14 +102,18 @@ export default function Home() {
 const [menuOpen, setMenuOpen] = useState(false)
 const [animalPopup, setAnimalPopup] = useState(false)
 const [animalMessage, setAnimalMessage] = useState("")
+const [deletePopup, setDeletePopup] = useState(false)
+const [deleteConfirm, setDeleteConfirm] = useState(false)
+const [deleteTaskIndex, setDeleteTaskIndex] = useState(null)
 const [taskData, setTaskData] = useLocalStorage("taskData", [
-  { name: "", clicked: 0, goal: 0, last: "" },
-  { name: "", clicked: 0, goal: 0, last: "" },
-  { name: "", clicked: 0, goal: 0, last: "" },
-  { name: "", clicked: 0, goal: 0, last: "" },
-  { name: "", clicked: 0, goal: 0, last: "" },
+  { name: "", clicked: 0, goal: 0, dates: "" },
+  { name: "", clicked: 0, goal: 0, dates: "" },
+  { name: "", clicked: 0, goal: 0, dates: "" },
+  { name: "", clicked: 0, goal: 0, dates: "" },
+  { name: "", clicked: 0, goal: 0, dates: "" },
 ]);
-
+const yesRef = useRef(null)
+const noRef = useRef(null)
 const allClicked = taskData[0].clicked+taskData[1].clicked+taskData[2].clicked+taskData[3].clicked+taskData[4].clicked
 useEffect(() => {
   if (allClicked === 30) {
@@ -113,6 +128,43 @@ useEffect(() => {
   }
 },[taskData, allClicked])
 console.log(taskData)
+
+
+// ... existing code ...
+
+function handleDeleteTask(taskIndex) {
+  setDeletePopup(true);
+  setDeleteTaskIndex(taskIndex)
+}
+
+function handleConfirmDelete() {
+  const yesButton = yesRef.current;
+  const noButton = noRef.current;
+
+  if (yesButton && noButton && deleteTaskIndex !== null) {
+    if (document.activeElement === yesButton) {
+      setDeleteConfirm(true);
+      console.log("DELETE")
+      const updatedTaskData = [...taskData];
+      updatedTaskData[deleteTaskIndex] = {
+        name: "",
+        clicked: 0,
+        goal: 0,
+        dates: "",
+      };
+      setTaskData(updatedTaskData);
+      setDeleteTaskIndex(null)
+      setDeletePopup(false)
+      setDeleteConfirm(false)
+    } else if (document.activeElement === noButton) {
+      setDeleteConfirm(false);
+      setDeleteTaskIndex(null)
+      setDeletePopup(false)
+    }
+  }
+
+  setDeletePopup(false);
+}
 function handleFormSubmit(event) {
   event.preventDefault();
 
@@ -160,18 +212,23 @@ function increaseTask(task) {
       <h2>Task1</h2>
       <input name ="task1name" type="text" max="20" placeholder={taskData[0].name} />
       <span>{taskData[0].clicked}</span>
+      <StyledX type="button" onClick ={() => handleDeleteTask(0)}><Image src ="/assets/x.png" width="45" height="45" alt="x"/></StyledX>
       <h2>Task2</h2>
       <input name ="task2name" type="text" max="20" placeholder={taskData[1].name} />
       <span>{taskData[1].clicked}</span>
+      <StyledX type="button" onClick ={() => handleDeleteTask(1)}><Image src ="/assets/x.png" width="45" height="45" alt="x"/></StyledX>
       <h2>Task3</h2>
       <input name ="task3name" type="text" max="20" placeholder={taskData[2].name} />
       <span>{taskData[2].clicked}</span>
+      <StyledX type="button" onClick ={() => handleDeleteTask(2)}><Image src ="/assets/x.png" width="45" height="45" alt="x"/></StyledX>
       <h2>Task4</h2>
       <input name ="task4name" type="text" max="20" placeholder={taskData[3].name} />
       <span>{taskData[3].clicked}</span>
+      <StyledX type="button" onClick ={() => handleDeleteTask(3)}><Image src ="/assets/x.png" width="45" height="45" alt="x"/></StyledX>
       <h2>Task5</h2>
       <input name ="task5name" type="text" max="20" placeholder={taskData[4].name} />
       <span>{taskData[4].clicked}</span>
+      <StyledX type="button" onClick ={() => handleDeleteTask(4)}><Image src ="/assets/x.png" width="45" height="45" alt="x"/></StyledX>
       <h2></h2>
       <button type ="submit">Submit</button>
       </StyledForm>
@@ -190,7 +247,11 @@ function increaseTask(task) {
       <button type ="button" onClick={()=>setAnimalPopup(false)} >Close</button>
       </StyledPopup>
       }
-
+      {deletePopup && <StyledPopup>
+      <p>Are you sure you want to delete this task? All progress will be lost!</p>
+      <button type ="button" onClick={handleConfirmDelete} ref={yesRef}>YES</button>
+      <button type ="button" onClick={handleConfirmDelete} ref={noRef} >NO</button>
+      </StyledPopup>}
       </MainWrapper>
    </>
   )
