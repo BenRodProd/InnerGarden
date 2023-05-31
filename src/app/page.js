@@ -69,7 +69,7 @@ position: absolute;
 flex-wrap: wrap;
 align-items: center;
 justify-content: center;
-bottom: 3rem;
+bottom: 4rem;
 width: 100%;
 z-index: 17;
 gap:20px;
