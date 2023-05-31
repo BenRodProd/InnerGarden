@@ -166,7 +166,7 @@ async function fetchMotivation() {
    return randomQuote
     
   } catch (error) {
-    console.log("Error fetching motivation:", error);
+   
   }
 }
 useEffect(() => {
@@ -196,7 +196,7 @@ useEffect(() => {
     
   }
 },[taskData, allClicked])
-console.log(taskData)
+
 
 
 // ... existing code ...
@@ -213,7 +213,7 @@ function handleConfirmDelete() {
   if (yesButton && noButton && deleteTaskIndex !== null) {
     if (document.activeElement === yesButton) {
       setDeleteConfirm(true);
-      console.log("DELETE")
+  
       const updatedTaskData = [...taskData];
       updatedTaskData[deleteTaskIndex] = {
         name: "",
