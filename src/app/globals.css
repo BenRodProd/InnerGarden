@@ -1,0 +1,25 @@
+* {
+  box-sizing: border-box;
+}
+html {
+  font-family: sans-serif;
+  width: 100vw;
+  height: 100vh;
+}
+body {
+  
+  display: flex;
+  
+  background-color: black;
+  color: white;
+  margin:auto;
+  padding:0;
+  overflow:hidden;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+ max-width:1000px;
+
+
+}
