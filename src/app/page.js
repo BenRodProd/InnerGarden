@@ -20,7 +20,9 @@ position:absolute;
 top:0;
 left: 0;
 z-index: 21;
-filter: invert(1)
+background-color: transparent;
+background: transparent;
+filter: invert(1);
 `
 const StyledOptions = styled.div`
 position: absolute;
@@ -67,7 +69,7 @@ position: absolute;
 flex-wrap: wrap;
 align-items: center;
 justify-content: center;
-bottom: 5px;
+bottom: 3rem;
 width: 100%;
 z-index: 17;
 gap:20px;
