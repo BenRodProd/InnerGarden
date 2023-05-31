@@ -20,6 +20,7 @@ position:absolute;
 top:0;
 left: 0;
 z-index: 21;
+filter: invert(1)
 `
 const StyledOptions = styled.div`
 position: absolute;
