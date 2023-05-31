@@ -6,6 +6,7 @@ const StyledDate = styled.h2`
   position: absolute;
   top: 7rem;
   color: rgba(255,255,255,0.8);
+  font-size: 4rem;
 `;
 
 export default function DisplayDate() {

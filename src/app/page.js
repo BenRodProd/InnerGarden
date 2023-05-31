@@ -13,13 +13,13 @@ import Trees from '@/components/Trees'
 import DisplayDate from '@/components/DisplayDate'
 import Butterfly from '@/components/Butterfly'
 import Squirrel from '@/components/Squirrel'
-
+import FetchMotivationApi from '@/components/FetchMotivationApi'
 
 const StyledMenu = styled(Image)`
 position:absolute;
 top:0;
 left: 0;
-z-index: 16;
+z-index: 21;
 `
 const StyledOptions = styled.div`
 position: absolute;
@@ -34,25 +34,39 @@ right:0;
 padding:4rem;
 width:100%;
 height:100%;
-background-color:rgba(0,0,0,0.8);
-z-index:15;
+background-color:rgba(0,0,0,0.9);
+z-index:20;
+@media (max-width: 768px) {
+    padding: 0rem;
+
+  }
 ` 
 const StyledForm = styled.form`
 display:flex;
 
 flex-direction:column;
 width:100%;
+height:100%;
 align-items:center;
 justify-content: center;
+@media (max-width: 768px) {
+    padding: 0rem;
+  }
+`
 
+const StyledTaskButton = styled.button`
+font-size: 3rem;
+font-weight: bold;
+border-radius: 8px;
 `
 
 const ButtonWrapper = styled.div`
 display: flex;
 position: absolute;
+flex-wrap: wrap;
 align-items: center;
 justify-content: center;
-bottom: 0;
+bottom: 5px;
 width: 100%;
 z-index: 17;
 gap:20px;
@@ -64,7 +78,7 @@ flex-direction: column;
 align-items: center;
 justify-content: center;
 padding: 4rem;
-font-size: 1.5rem;
+font-size: 2rem;
 row-gap: 1rem;
 height:100%;
 width:100%;
@@ -75,11 +89,33 @@ background-color:rgba(0,0,0,0.9);
 text-align: center;
 
 `  
+const InputWrapper = styled.div`
+display:inline;
+position: relative;
 
+`
 const StyledX = styled.button`
+position:absolute;
+;
 background-color:transparent;
 background: transparent;
 border:none;
+`
+
+const FormHeader=styled.h2`
+margin-top:2rem;
+margin-bottom: 0;
+font-size: 2.5rem;
+letter-spacing: 0.5rem;
+`
+
+const StyledCount = styled.span`
+font-size: 3rem;
+`
+
+const StyledButton = styled.button`
+font-size: 3rem;
+letter-spacing: 1rem;
 `
 
 const MainWrapper = styled.div`
@@ -105,16 +141,46 @@ const [animalMessage, setAnimalMessage] = useState("")
 const [deletePopup, setDeletePopup] = useState(false)
 const [deleteConfirm, setDeleteConfirm] = useState(false)
 const [deleteTaskIndex, setDeleteTaskIndex] = useState(null)
+const [motivationPopup, setMotivationPopup] = useState(false)
+const [motivationMessage, setMotivationMessage] = useState("")
+const [motivationAuthor, setMotivationAuthor] = useState("")
 const [taskData, setTaskData] = useLocalStorage("taskData", [
-  { name: "", clicked: 0, goal: 0, dates: "" },
-  { name: "", clicked: 0, goal: 0, dates: "" },
-  { name: "", clicked: 0, goal: 0, dates: "" },
-  { name: "", clicked: 0, goal: 0, dates: "" },
-  { name: "", clicked: 0, goal: 0, dates: "" },
+  { name: "", clicked: 0, goal: 0, dates: [] },
+  { name: "", clicked: 0, goal: 0, dates: [] },
+  { name: "", clicked: 0, goal: 0, dates: [] },
+  { name: "", clicked: 0, goal: 0, dates: [] },
+  { name: "", clicked: 0, goal: 0, dates: [] },
+  {lastvisit: ""},
 ]);
 const yesRef = useRef(null)
 const noRef = useRef(null)
 const allClicked = taskData[0].clicked+taskData[1].clicked+taskData[2].clicked+taskData[3].clicked+taskData[4].clicked
+async function fetchMotivation() {
+  try {
+    const randomQuote = await FetchMotivationApi();
+    setMotivationAuthor(randomQuote.author)
+    setMotivationMessage(randomQuote.text)
+   return randomQuote
+    
+  } catch (error) {
+    console.log("Error fetching motivation:", error);
+  }
+}
+useEffect(() => {
+  const currentDate = new Date().toISOString().slice(0, 10)
+  if (taskData[5].lastvisit !== currentDate) {
+    fetchMotivation()
+    const updatedTaskData = [...taskData];
+    updatedTaskData[5].lastvisit = currentDate;
+   
+    setMotivationPopup(true)
+   
+   
+    setTaskData(updatedTaskData);
+
+  }
+}, []);
+
 useEffect(() => {
   if (allClicked === 30) {
     setAnimalPopup(true)
@@ -187,8 +253,18 @@ function handleFormSubmit(event) {
 }
 function increaseTask(task) {
   const updatedTaskData = [...taskData];
-  updatedTaskData[task].clicked++;
-  setTaskData(updatedTaskData);
+  const currentDate = new Date().toISOString(); // Get current date in ISO format
+
+  if (!updatedTaskData[task].dates.includes(currentDate)) {
+    updatedTaskData[task] = {
+      ...updatedTaskData[task],
+      clicked: updatedTaskData[task].clicked + 1,
+      dates: updatedTaskData[task].dates
+        ? `${updatedTaskData[task].dates},${currentDate}`
+        : currentDate,
+    };
+    setTaskData(updatedTaskData);
+  }
 }
 
   return (
@@ -209,36 +285,44 @@ function increaseTask(task) {
     {menuOpen &&
     <StyledOptions>
       <StyledForm onSubmit={handleFormSubmit}>
-      <h2>Task1</h2>
-      <input name ="task1name" type="text" max="20" placeholder={taskData[0].name} />
-      <span>{taskData[0].clicked}</span>
-      <StyledX type="button" onClick ={() => handleDeleteTask(0)}><Image src ="/assets/x.png" width="45" height="45" alt="x"/></StyledX>
-      <h2>Task2</h2>
-      <input name ="task2name" type="text" max="20" placeholder={taskData[1].name} />
-      <span>{taskData[1].clicked}</span>
-      <StyledX type="button" onClick ={() => handleDeleteTask(1)}><Image src ="/assets/x.png" width="45" height="45" alt="x"/></StyledX>
-      <h2>Task3</h2>
-      <input name ="task3name" type="text" max="20" placeholder={taskData[2].name} />
-      <span>{taskData[2].clicked}</span>
-      <StyledX type="button" onClick ={() => handleDeleteTask(2)}><Image src ="/assets/x.png" width="45" height="45" alt="x"/></StyledX>
-      <h2>Task4</h2>
-      <input name ="task4name" type="text" max="20" placeholder={taskData[3].name} />
-      <span>{taskData[3].clicked}</span>
-      <StyledX type="button" onClick ={() => handleDeleteTask(3)}><Image src ="/assets/x.png" width="45" height="45" alt="x"/></StyledX>
-      <h2>Task5</h2>
-      <input name ="task5name" type="text" max="20" placeholder={taskData[4].name} />
-      <span>{taskData[4].clicked}</span>
-      <StyledX type="button" onClick ={() => handleDeleteTask(4)}><Image src ="/assets/x.png" width="45" height="45" alt="x"/></StyledX>
-      <h2></h2>
-      <button type ="submit">Submit</button>
+      <FormHeader>Task 1</FormHeader>
+      <InputWrapper><input name ="task1name" type="text" maxLength="20" placeholder={taskData[0].name} />
+      <StyledX type="button" onClick ={() => handleDeleteTask(0)}><Image src ="/assets/x.png" width="25" height="25" alt="x"/></StyledX>
+      </InputWrapper>
+      <StyledCount>{taskData[0].clicked}</StyledCount>
+      
+      <FormHeader>Task 2</FormHeader>
+      <InputWrapper><input name ="task2name" type="text" maxLength="20" placeholder={taskData[1].name} />
+      <StyledX type="button" onClick ={() => handleDeleteTask(1)}><Image src ="/assets/x.png" width="25" height="25" alt="x"/></StyledX>
+      </InputWrapper>
+      <StyledCount>{taskData[1].clicked}</StyledCount>
+      <FormHeader>Task 3</FormHeader>
+      <InputWrapper><input name ="task3name" type="text" maxLength="20" placeholder={taskData[2].name} />
+      <StyledX type="button" onClick ={() => handleDeleteTask(2)}><Image src ="/assets/x.png" width="25" height="25" alt="x"/></StyledX>
+      </InputWrapper>
+      <StyledCount>{taskData[2].clicked}</StyledCount>
+      <FormHeader>Task 4</FormHeader>
+      <InputWrapper>
+      <input name ="task4name" type="text" maxLength="20" placeholder={taskData[3].name} />
+      <StyledX type="button" onClick ={() => handleDeleteTask(3)}><Image src ="/assets/x.png" width="25" height="25" alt="x"/></StyledX>
+      </InputWrapper>
+      <StyledCount>{taskData[3].clicked}</StyledCount>
+      <FormHeader>Task 5</FormHeader>
+      <InputWrapper>
+      <input name ="task5name" type="text" maxLength="20" placeholder={taskData[4].name} />
+      <StyledX type="button" onClick ={() => handleDeleteTask(4)}><Image src ="/assets/x.png" width="25" height="25" alt="x"/></StyledX>
+      </InputWrapper>
+      <StyledCount>{taskData[4].clicked}</StyledCount>
+      <FormHeader></FormHeader>
+      <StyledButton type ="submit">SUBMIT</StyledButton>
       </StyledForm>
       </StyledOptions>}
       <ButtonWrapper>
-        {taskData[0].name !== "" && <button type="button" onClick={()=>increaseTask(0)}>{taskData[0].name}</button>}
-        {taskData[1].name !== "" && <button type="button" onClick={()=>increaseTask(1)}>{taskData[1].name}</button>}
-        {taskData[2].name !== "" && <button type="button" onClick={()=>increaseTask(2)}>{taskData[2].name}</button>}  
-        {taskData[3].name !== "" && <button type="button" onClick={()=>increaseTask(3)}>{taskData[3].name}</button>}
-        {taskData[4].name !== "" && <button type="button" onClick={()=>increaseTask(4)}>{taskData[4].name}</button>}
+        {taskData[0].name !== "" && <StyledTaskButton type="button" disabled={taskData[0].dates && taskData[0].dates.includes(new Date().toISOString().slice(0, 10))} onClick={()=>increaseTask(0)}>{taskData[0].name}</StyledTaskButton>}
+        {taskData[1].name !== "" && <StyledTaskButton type="button" disabled={taskData[1].dates && taskData[1].dates.includes(new Date().toISOString().slice(0, 10))}onClick={()=>increaseTask(1)}>{taskData[1].name}</StyledTaskButton>}
+        {taskData[2].name !== "" && <StyledTaskButton type="button" disabled={taskData[2].dates && taskData[2].dates.includes(new Date().toISOString().slice(0, 10))}onClick={()=>increaseTask(2)}>{taskData[2].name}</StyledTaskButton>}  
+        {taskData[3].name !== "" && <StyledTaskButton type="button" disabled={taskData[3].dates && taskData[3].dates.includes(new Date().toISOString().slice(0, 10))}onClick={()=>increaseTask(3)}>{taskData[3].name}</StyledTaskButton>}
+        {taskData[4].name !== "" && <StyledTaskButton type="button" disabled={taskData[4].dates && taskData[4].dates.includes(new Date().toISOString().slice(0, 10))}onClick={()=>increaseTask(4)}>{taskData[4].name}</StyledTaskButton>}
         
       </ButtonWrapper>
       {animalPopup && 
@@ -249,9 +333,14 @@ function increaseTask(task) {
       }
       {deletePopup && <StyledPopup>
       <p>Are you sure you want to delete this task? All progress will be lost!</p>
-      <button type ="button" onClick={handleConfirmDelete} ref={yesRef}>YES</button>
-      <button type ="button" onClick={handleConfirmDelete} ref={noRef} >NO</button>
+      <StyledButton type ="button" onClick={handleConfirmDelete} ref={yesRef}>YES</StyledButton>
+      <StyledButton type ="button" onClick={handleConfirmDelete} ref={noRef} >NO</StyledButton>
       </StyledPopup>}
+      {motivationPopup && <StyledPopup onClick={()=> setMotivationPopup(false)}>
+        <h2>{motivationMessage}</h2>
+        <h2>{motivationAuthor}</h2>
+      </StyledPopup>}
+        
       </MainWrapper>
    </>
   )
