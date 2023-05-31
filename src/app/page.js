@@ -61,6 +61,9 @@ const StyledTaskButton = styled.button`
 font-size: 3rem;
 font-weight: bold;
 border-radius: 8px;
+&:disabled {
+  opacity:0.25
+}
 `
 
 const ButtonWrapper = styled.div`
