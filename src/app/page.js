@@ -95,6 +95,7 @@ text-align: center;
 const InputWrapper = styled.div`
 display:inline;
 position: relative;
+;
 
 `
 const StyledX = styled.button`
@@ -110,6 +111,10 @@ margin-top:2rem;
 margin-bottom: 0;
 font-size: 2.5rem;
 letter-spacing: 0.5rem;
+`
+
+const StyledInput = styled.input`
+font-size:2.5rem;
 `
 
 const StyledCount = styled.span`
@@ -289,30 +294,30 @@ function increaseTask(task) {
     <StyledOptions>
       <StyledForm onSubmit={handleFormSubmit}>
       <FormHeader>Task 1</FormHeader>
-      <InputWrapper><input name ="task1name" type="text" maxLength="20" placeholder={taskData[0].name} />
+      <InputWrapper><StyledInput name ="task1name" type="text" maxLength="20" placeholder={taskData[0].name} />
       <StyledX type="button" onClick ={() => handleDeleteTask(0)}><Image src ="/assets/x.png" width="25" height="25" alt="x"/></StyledX>
       </InputWrapper>
       <StyledCount>{taskData[0].clicked}</StyledCount>
       
       <FormHeader>Task 2</FormHeader>
-      <InputWrapper><input name ="task2name" type="text" maxLength="20" placeholder={taskData[1].name} />
+      <InputWrapper><StyledInput name ="task2name" type="text" maxLength="20" placeholder={taskData[1].name} />
       <StyledX type="button" onClick ={() => handleDeleteTask(1)}><Image src ="/assets/x.png" width="25" height="25" alt="x"/></StyledX>
       </InputWrapper>
       <StyledCount>{taskData[1].clicked}</StyledCount>
       <FormHeader>Task 3</FormHeader>
-      <InputWrapper><input name ="task3name" type="text" maxLength="20" placeholder={taskData[2].name} />
+      <InputWrapper><StyledInput name ="task3name" type="text" maxLength="20" placeholder={taskData[2].name} />
       <StyledX type="button" onClick ={() => handleDeleteTask(2)}><Image src ="/assets/x.png" width="25" height="25" alt="x"/></StyledX>
       </InputWrapper>
       <StyledCount>{taskData[2].clicked}</StyledCount>
       <FormHeader>Task 4</FormHeader>
       <InputWrapper>
-      <input name ="task4name" type="text" maxLength="20" placeholder={taskData[3].name} />
+      <StyledInput name ="task4name" type="text" maxLength="20" placeholder={taskData[3].name} />
       <StyledX type="button" onClick ={() => handleDeleteTask(3)}><Image src ="/assets/x.png" width="25" height="25" alt="x"/></StyledX>
       </InputWrapper>
       <StyledCount>{taskData[3].clicked}</StyledCount>
       <FormHeader>Task 5</FormHeader>
       <InputWrapper>
-      <input name ="task5name" type="text" maxLength="20" placeholder={taskData[4].name} />
+      <StyledInput name ="task5name" type="text" maxLength="20" placeholder={taskData[4].name} />
       <StyledX type="button" onClick ={() => handleDeleteTask(4)}><Image src ="/assets/x.png" width="25" height="25" alt="x"/></StyledX>
       </InputWrapper>
       <StyledCount>{taskData[4].clicked}</StyledCount>
