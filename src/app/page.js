@@ -163,6 +163,8 @@ const [taskData, setTaskData] = useLocalStorage("taskData", [
   { name: "", clicked: 0, goal: 0, dates: [] },
   {lastvisit: ""},
 ]);
+
+
 const yesRef = useRef(null)
 const noRef = useRef(null)
 const allClicked = taskData[0].clicked+taskData[1].clicked+taskData[2].clicked+taskData[3].clicked+taskData[4].clicked
@@ -177,6 +179,15 @@ async function fetchMotivation() {
    
   }
 }
+const [isLoading, setIsLoading] = useState(true);
+
+useEffect(() => {
+
+  setTimeout(() => {
+    setIsLoading(false);
+  }, 10);
+}, []);
+
 useEffect(() => {
   const currentDate = new Date().toISOString().slice(0, 10)
   if (taskData[5].lastvisit !== currentDate) {
@@ -206,8 +217,6 @@ useEffect(() => {
 },[taskData, allClicked])
 
 
-
-// ... existing code ...
 
 function handleDeleteTask(taskIndex) {
   setDeletePopup(true);
@@ -277,7 +286,11 @@ function increaseTask(task) {
     setTaskData(updatedTaskData);
   }
 }
+if (isLoading) {
+  return (<div>Loading..</div>
 
+  )
+}
   return (
    <>
    <MainWrapper> 
